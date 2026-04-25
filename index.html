@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="color-scheme" content="light only">
+<title>編み物カウンター | Knitting Counter - ✿ YUCCHI ✿</title>
+<meta name="description" content="棒針とかぎ針の目数・段数カウンター。目標設定・ラップ記録つき。Knitting row and stitch counter by YUCCHI.">
+<meta property="og:title" content="編み物カウンター | Knitting Counter - ✿ YUCCHI ✿">
+<meta property="og:description" content="目数・段数・周数・回数を記録できる編み物カウンター。目標設定・ラップ記録つき。">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ── Lady Gray 08 ──────────────────────────────
+     #D8E2E2 / #E8E0E4 / #E2D8D8 / #F2EAE8 / #E8E8E8
+     ──────────────────────────────────────────────── */
+  :root {
+    color-scheme: light only;
+
+    --bg:         #EBE3E6;
+    --surface:    #FFFFFF;
+    --surface-2:  #FAF7F6;
+    --text:       #5C5058;
+    --text-sub:   #9A8E90;
+    --border:     #E4DBDB;
+
+    --accent:     #8FA8A8;
+    --accent-lt:  #D8E2E2;
+    --accent-bg:  #EAF0F0;
+
+    --sec:        #B8A0A4;
+    --sec-lt:     #E8E0E4;
+    --sec-bg:     #F2EEF0;
+
+    --num-even:   #7A9898;
+    --num-odd:    #A88898;
+
+    --shadow:     0 4px 28px rgba(100,85,90,0.10);
+    --shadow-sm:  0 2px 12px rgba(100,85,90,0.08);
+
+    --radius:     20px;
+    --radius-sm:  12px;
+    --radius-pill: 999px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 48px;
+  }
+
+  body::before {
+    content: none;
+  }
+
+  /* ── ヘッダー ── */
+  header {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 18px 20px 18px;
+    width: 100%;
+  }
+  header h1 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: clamp(15px, 3.5vw, 19px);
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: .10em;
+    line-height: 1.4;
+    margin-bottom: 5px;
+  }
+  header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(26px, 6vw, 40px);
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: .14em;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  header .title-ja-sub {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: clamp(11px, 3vw, 15px);
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: .06em;
+    opacity: 0.65;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    white-space: nowrap;
+  }
+  header .title-ja-sub::before,
+  header .title-ja-sub::after {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.45;
+    flex-shrink: 0;
+  }
+  header .brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #A07080;
+    letter-spacing: .42em;
+    padding-top: 10px;
+  }
+
+  /* ── メインコンテンツ ── */
+  .app {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 440px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ── カード ── */
+  .main-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 32px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    border: 1.5px solid rgba(228,219,219,0.6);
+  }
+
+  /* ── カウンターラベル ── */
+  .counter-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-sub);
+    font-weight: 500;
+    letter-spacing: .06em;
+  }
+  .counter-label select {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 5px 12px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    background: var(--surface-2);
+    cursor: pointer;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .counter-label select:focus { border-color: var(--accent); }
+
+  /* ── カウント表示 ── */
+  .count-display {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    line-height: 1;
+  }
+  .count-number {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 500;
+    font-size: clamp(80px, 20vw, 100px);
+    color: var(--text);
+    transition: transform .15s cubic-bezier(0.34,1.56,0.64,1), color .3s;
+    display: inline-block;
+    letter-spacing: -.02em;
+  }
+  .count-number.is-even { color: rgba(168,136,152,0.88); }
+  .count-number.is-odd  { color: rgba(122,152,152,0.88); }
+  .count-number.bump    { transform: scale(1.07); }
+
+  .count-unit {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 1rem;
+    color: var(--text-sub);
+    font-weight: 500;
+    letter-spacing: .06em;
+  }
+
+  /* ── 目標・プログレス ── */
+  .goal-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-sub);
+    width: 100%;
+    justify-content: center;
+  }
+  .goal-input {
+    width: 72px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 12px;
+    text-align: center;
+    outline: none;
+    color: var(--text);
+    background: var(--surface-2);
+    transition: border-color .2s;
+  }
+  .goal-input:focus { border-color: var(--accent); }
+  #goalStatus {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: .04em;
+  }
+
+  .progress-wrap {
+    width: 100%;
+    height: 5px;
+    background: var(--border);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    border-radius: var(--radius-pill);
+    background: rgba(154,142,144,0.55);
+    transition: width .3s ease, background .3s ease;
+  }
+  .progress-bar.is-empty { background: rgba(154,142,144,0.20); }
+
+  /* ── ボタン ── */
+  .btn-area {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+  .btn-main {
+    flex: 1;
+    padding: 18px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all .15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: .04em;
+  }
+  .btn-main:active { transform: scale(0.96); }
+
+  .btn-up {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(143,168,168,0.30);
+  }
+  .btn-up:hover { opacity: .92; }
+
+  .btn-down {
+    background: var(--surface-2);
+    color: var(--text-sub);
+    border: 1.5px solid var(--border);
+    box-shadow: 0 2px 12px rgba(100,85,90,0.08);
+    flex: 0 0 auto;
+    width: 76px;
+    font-size: 1.4rem;
+    padding: 18px 0;
+  }
+  .btn-down:hover { background: #EEE8E8; }
+
+  .btn-label {
+    font-size: 10px;
+    opacity: 0.75;
+    letter-spacing: .04em;
+    font-weight: 500;
+  }
+  @media (pointer: coarse) {
+    .pc-only { display: none; }
+    .btn-main { justify-content: center; }
+    .btn-down { display: flex; align-items: center; justify-content: center; }
+  }
+
+  /* ── サブボタン ── */
+  .sub-btn-area {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+  .btn-lap {
+    flex: 1;
+    border: 1.5px solid var(--sec-lt);
+    background: var(--sec-bg);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--sec);
+    cursor: pointer;
+    transition: all .15s;
+    letter-spacing: .04em;
+  }
+  .btn-lap:hover { background: var(--sec-lt); }
+  .btn-lap:active { transform: scale(.97); }
+
+  .btn-reset {
+    flex: 1;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: all .15s;
+    letter-spacing: .04em;
+  }
+  .btn-reset:hover { border-color: #C8ABAB; color: #A07880; }
+  .btn-reset:active { transform: scale(.97); }
+
+  /* ── キーヒント ── */
+  .hint {
+    font-size: 10px;
+    color: var(--text-sub);
+    opacity: 0.7;
+    text-align: center;
+    letter-spacing: .04em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  @media (pointer: coarse) { .hint { display: none; } }
+  .key-badge {
+    display: inline-flex;
+    align-items: center;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 10px;
+    color: var(--text);
+    font-weight: 700;
+    box-shadow: 0 1px 0 var(--border);
+  }
+
+  /* ── 履歴カード ── */
+  .history-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 18px 20px;
+    width: 100%;
+    border: 1.5px solid rgba(228,219,219,0.6);
+  }
+  .history-title {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-sub);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .history-title::before,
+  .history-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .history-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+  }
+  .history-chip {
+    background: var(--accent-bg);
+    border: 1.5px solid var(--accent-lt);
+    border-radius: var(--radius-pill);
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--text);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: .03em;
+  }
+  .history-chip:hover { background: var(--accent-lt); }
+  .history-chip small { color: var(--text-sub); font-weight: 500; font-size: 10px; }
+
+  /* 🟡修正：✕ボタンのタップ領域を拡大 */
+  .chip-del {
+    color: var(--border);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    transition: color .15s;
+    padding: 4px 6px;   /* タップ領域を広げる */
+    margin: -4px -6px;  /* 外見を変えずに領域だけ拡大 */
+    border-radius: 4px;
+  }
+  .history-chip:hover .chip-del { color: #C8A0A0; }
+
+  .btn-lap-reset {
+    border: none;
+    background: none;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 11px;
+    color: var(--border);
+    cursor: pointer;
+    transition: color .15s;
+    font-weight: 700;
+    padding: 4px 8px;
+    margin-top: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .btn-lap-reset:hover { color: #C8A0A0; }
+
+  /* ── モーダル ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(92,80,88,0.18);
+    backdrop-filter: blur(6px);
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 32px 28px 24px;
+    width: 88%;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 40px rgba(92,80,88,0.16);
+    animation: modalPop .3s cubic-bezier(0.34,1.56,0.64,1);
+    border: 1.5px solid var(--border);
+  }
+  @keyframes modalPop {
+    from { transform: scale(0.88); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+  }
+  .modal-icon  { font-size: 2rem; }
+  .modal-title {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+    letter-spacing: .05em;
+  }
+  .modal-text {
+    font-size: 12px;
+    color: var(--text-sub);
+    text-align: center;
+    line-height: 1.8;
+  }
+  .modal-btns {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .modal-btn-cancel {
+    flex: 1;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .modal-btn-cancel:hover { background: var(--surface-2); }
+  .modal-btn-ok {
+    flex: 1;
+    border: none;
+    background: var(--sec);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #fff;
+    cursor: pointer;
+    transition: all .15s;
+    box-shadow: 0 3px 0 #988090;
+  }
+  .modal-btn-ok:hover { opacity: .9; }
+  .modal-btn-ok:active { transform: translateY(2px); box-shadow: 0 1px 0 #988090; }
+
+  /* ── コンフェッティ ── */
+  .confetti-wrap {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .confetti-piece {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    animation: confettiFall 1.2s ease-in forwards;
+  }
+  @keyframes confettiFall {
+    0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ── 完了バナー ── */
+  .done-banner {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: linear-gradient(135deg, var(--accent), var(--sec));
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 12px 24px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 8px 24px rgba(92,80,88,0.20);
+    z-index: 200;
+    transition: transform .4s cubic-bezier(0.34,1.56,0.64,1);
+    white-space: nowrap;
+    letter-spacing: .06em;
+  }
+  .done-banner.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── PC ── */
+  @media (min-width: 680px) {
+    header { padding: 36px 20px 20px; }
+    .app { max-width: 460px; }
+  }
+
+  header .data-hint {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 10px;
+    color: var(--text-sub);
+    opacity: 0.85;
+    letter-spacing: .04em;
+    margin-top: 10px;
+    line-height: 1.7;
+    text-align: center;
+    padding: 0 16px;
+  }
+
+  /* ── データ注意書きアコーディオン ── */
+  .data-note {
+    width: 100%;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+  }
+  .data-note-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 11px 16px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-sub);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    letter-spacing: .06em;
+    transition: background .15s;
+  }
+  .data-note-btn:hover { background: var(--surface-2); }
+  .data-note-arrow {
+    font-size: 10px;
+    transition: transform .25s ease;
+    display: inline-block;
+    color: var(--text-sub);
+    opacity: 0.6;
+  }
+  .data-note.open .data-note-arrow { transform: rotate(180deg); }
+  .data-note-body {
+    display: none;
+    padding: 0 16px 14px;
+    font-size: 11px;
+    color: var(--text-sub);
+    line-height: 2.0;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  .data-note.open .data-note-body { display: block; }
+  .data-note-body p { margin-bottom: 6px; }
+  .data-note-body p:last-child { margin-bottom: 0; }
+
+  /* ── ダークモード強制無効化 ── */
+  @media (prefers-color-scheme: dark) {
+    html { background: #EBE3E6 !important; }
+    body { background-color: #EBE3E6 !important; color: #5C5058 !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>編み物カウンター</h1>
+  <h2>Knitting Counter</h2>
+  <div class="title-ja-sub">棒針とかぎ針の目数・段数カウンター</div>
+  <div class="brand">✿ YUCCHI ✿</div>
+  <div class="data-hint">データはこの端末に保存されます<br>詳細は ✿ データについて をご確認ください</div>
+</header>
+
+<div class="app">
+
+  <div class="main-card">
+    <div class="counter-label">
+      <span>カウント単位：</span>
+      <select id="unitSelect">
+        <option value="目">目</option>
+        <option value="段">段</option>
+        <option value="周">周</option>
+        <option value="回">回</option>
+      </select>
+    </div>
+
+    <div class="count-display">
+      <span class="count-number" id="countNum">0</span>
+      <span class="count-unit"   id="countUnit">目</span>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progressBar" style="width:0%"></div>
+    </div>
+
+    <div class="goal-row">
+      目標：
+      <input class="goal-input" type="number" id="goalInput" placeholder="なし" min="0" max="999">
+      <span id="goalStatus"></span>
+    </div>
+
+    <div class="btn-area">
+      <button class="btn-main btn-up" id="btnUp" onclick="countUp()">
+        <span>＋ カウント</span>
+        <span class="btn-label pc-only">Space / Enter</span>
+      </button>
+      <button class="btn-main btn-down" id="btnDown" onclick="countDown()">－</button>
+    </div>
+
+    <div class="sub-btn-area">
+      <button class="btn-lap" onclick="showLapModal()">📌 ラップ記録</button>
+      <button class="btn-reset" onclick="showResetModal()">↺ リセット</button>
+    </div>
+
+    <div class="hint">
+      <span class="key-badge">Space</span> または
+      <span class="key-badge">Enter</span> で +1、
+      <span class="key-badge">Backspace</span> で -1
+    </div>
+  </div>
+
+  <div class="history-card" id="historyCard" style="display:none">
+    <div class="history-title">ラップ記録</div>
+    <div class="history-list" id="historyList"></div>
+    <button class="btn-lap-reset" onclick="showLapResetModal()">記録を消す</button>
+  </div>
+
+  <!-- データ注意書きアコーディオン -->
+  <div class="data-note" id="dataNote">
+    <button class="data-note-btn" onclick="toggleDataNote()">
+      <span>✿ データについて</span>
+      <span class="data-note-arrow">▼</span>
+    </button>
+    <div class="data-note-body">
+      <p>データはこの端末のブラウザに保存されます。<br>スマホとPCなど、端末が異なると記録は共有されません。</p>
+      <p>ブラウザの「履歴を消去」や「キャッシュ削除」を行うと、保存されたデータが消える場合があります。大切な記録はメモなどに控えておくと安心です。</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- カウントリセット確認モーダル -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-icon">↺</div>
+    <div class="modal-title">リセットしますか？</div>
+    <div class="modal-text">カウントが０に戻ります。<br>ラップ記録は残ります。</div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="hideModal('modalOverlay')">キャンセル</button>
+      <button class="modal-btn-ok"     onclick="confirmReset()">リセット</button>
+    </div>
+  </div>
+</div>
+
+<!-- ラップ記録確認モーダル（🔴新規追加：誤操作防止） -->
+<div class="modal-overlay" id="lapModal">
+  <div class="modal">
+    <div class="modal-icon">📌</div>
+    <div class="modal-title">ラップを記録しますか？</div>
+    <div class="modal-text" id="lapModalText"></div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="hideModal('lapModal')">キャンセル</button>
+      <button class="modal-btn-ok" id="lapModalOk" onclick="confirmLap()">記録する</button>
+    </div>
+  </div>
+</div>
+
+<!-- ラップ記録リセット確認モーダル -->
+<div class="modal-overlay" id="lapResetOverlay">
+  <div class="modal">
+    <div class="modal-icon">🗑</div>
+    <div class="modal-title">記録を消しますか？</div>
+    <div class="modal-text">すべてのラップ記録が消えます。<br>カウントはそのまま残ります。</div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="hideModal('lapResetOverlay')">キャンセル</button>
+      <button class="modal-btn-ok"     onclick="confirmLapReset()">消す</button>
+    </div>
+  </div>
+</div>
+
+<div class="confetti-wrap" id="confettiWrap"></div>
+<div class="done-banner"   id="doneBanner">✿ 目標達成！おめでとう！</div>
+
+<script>
+  /* ─────────────────────────────────────────
+     状態変数
+  ───────────────────────────────────────── */
+  const MAX_COUNT = 999;
+  const MAX_LAPS  = 100; // ラップ記録の上限
+
+  let count       = 0;
+  let laps        = [];
+  let goalReached = false;
+
+  const countNumEl  = document.getElementById('countNum');
+  const countUnitEl = document.getElementById('countUnit');
+  const goalInput   = document.getElementById('goalInput');
+  const goalStatus  = document.getElementById('goalStatus');
+  const progressBar = document.getElementById('progressBar');
+  const historyCard = document.getElementById('historyCard');
+  const historyList = document.getElementById('historyList');
+  const doneBanner  = document.getElementById('doneBanner');
+  const unitSelect  = document.getElementById('unitSelect');
+
+  /* ─────────────────────────────────────────
+     localStorage（キー名は変更しない）
+  ───────────────────────────────────────── */
+  function saveData() {
+    localStorage.setItem('kc_count', count);
+    localStorage.setItem('kc_unit',  getUnit());
+    localStorage.setItem('kc_goal',  goalInput.value);
+    localStorage.setItem('kc_laps',  JSON.stringify(laps));
+  }
+
+  function loadData() {
+    const savedCount = localStorage.getItem('kc_count');
+    const savedUnit  = localStorage.getItem('kc_unit');
+    const savedGoal  = localStorage.getItem('kc_goal');
+    const savedLaps  = localStorage.getItem('kc_laps');
+
+    if (savedCount !== null) count = parseInt(savedCount) || 0;
+    if (savedUnit)  unitSelect.value = savedUnit;
+    if (savedGoal)  goalInput.value  = savedGoal;
+
+    // 🔴修正：JSON.parseのエラーハンドリングを追加
+    if (savedLaps) {
+      try {
+        laps = JSON.parse(savedLaps);
+        if (!Array.isArray(laps)) laps = [];
+      } catch (e) {
+        laps = [];
+      }
+      renderHistory();
+    }
+  }
+
+  /* ─────────────────────────────────────────
+     初期化（🔴修正：localStorage.clear()を削除）
+     clear()はドメイン全体のデータを消すため危険。
+     このアプリのキーだけを管理する方針に変更。
+  ───────────────────────────────────────── */
+  function initApp() {
+    loadData();
+    updateDisplay();
+  }
+
+  /* ─────────────────────────────────────────
+     ユーティリティ
+  ───────────────────────────────────────── */
+  function getUnit() { return unitSelect.value; }
+
+  unitSelect.addEventListener('change', () => { updateDisplay(); saveData(); });
+  goalInput.addEventListener('input',   () => { updateDisplay(); saveData(); });
+
+  /* ─────────────────────────────────────────
+     表示更新
+  ───────────────────────────────────────── */
+  function updateDisplay() {
+    const u = getUnit();
+
+    countNumEl.textContent = count;
+
+    // 🔴修正：単位の表示バグを修正（「目目」「段目」問題）
+    // 「目」→「目」、「段」→「段」（そのまま単位を表示）
+    countUnitEl.textContent = u;
+
+    countNumEl.classList.remove('is-even', 'is-odd');
+    countNumEl.classList.add(count % 2 === 0 ? 'is-even' : 'is-odd');
+
+    // 上限チェックをparseIntより先に行い、表示前にクランプする
+    if (goalInput.value !== '' && parseInt(goalInput.value) > MAX_COUNT) {
+      goalInput.value = MAX_COUNT;
+    }
+
+    const goal = parseInt(goalInput.value);
+
+    if (goal > 0) {
+      const pct = Math.min(100, (count / goal) * 100);
+      progressBar.style.width = pct + '%';
+      progressBar.classList.toggle('is-empty', count === 0);
+
+      if (count >= goal) {
+        goalStatus.textContent = '✿ 達成！';
+        if (!goalReached) {
+          goalReached = true;
+          showConfetti();
+          showDoneBanner();
+        }
+      } else {
+        goalStatus.textContent = `残り ${goal - count}${u}`;
+        goalReached = false;
+      }
+    } else {
+      progressBar.style.width = '0%';
+      progressBar.classList.add('is-empty');
+      goalStatus.textContent = '';
+    }
+  }
+
+  /* ─────────────────────────────────────────
+     カウント操作
+  ───────────────────────────────────────── */
+  function bump() {
+    countNumEl.classList.remove('bump');
+    void countNumEl.offsetWidth; // reflow
+    countNumEl.classList.add('bump');
+    setTimeout(() => countNumEl.classList.remove('bump'), 200);
+  }
+
+  function countUp() {
+    if (count >= MAX_COUNT) return; // 🟡修正：上限を定数で管理
+    count++;
+    bump();
+    updateDisplay();
+    saveData();
+  }
+
+  function countDown() {
+    if (count <= 0) return;
+    count--;
+    bump();
+    updateDisplay();
+    saveData();
+  }
+
+  /* ─────────────────────────────────────────
+     モーダル共通
+  ───────────────────────────────────────── */
+  function showModal(id) { document.getElementById(id).classList.add('show'); }
+  function hideModal(id) { document.getElementById(id).classList.remove('show'); }
+
+  /* ─────────────────────────────────────────
+     リセット
+  ───────────────────────────────────────── */
+  function showResetModal() { showModal('modalOverlay'); }
+  function confirmReset() {
+    count = 0;
+    goalReached = false;
+    hideModal('modalOverlay');
+    updateDisplay();
+    saveData();
+  }
+
+  /* ─────────────────────────────────────────
+     ラップ記録（🔴修正：確認モーダルを追加）
+  ───────────────────────────────────────── */
+  function showLapModal() {
+    if (count === 0) return;
+    if (laps.length >= MAX_LAPS) {
+      // 上限に達したら専用メッセージを出す
+      document.getElementById('lapModalText').textContent =
+        `ラップ記録は${MAX_LAPS}件までです。古い記録を削除してから追加してください。`;
+      document.getElementById('lapModalOk').style.display = 'none';
+    } else {
+      const u = getUnit();
+      document.getElementById('lapModalText').textContent =
+        `現在の ${count}${u} を記録して、カウントを０に戻します。`;
+      document.getElementById('lapModalOk').style.display = '';
+    }
+    showModal('lapModal');
+  }
+
+  function confirmLap() {
+    const now     = new Date();
+    const dateStr = now.toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' });
+    const timeStr = now.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+    laps.push({ count, unit: getUnit(), time: `${dateStr} ${timeStr}` });
+    count       = 0;
+    goalReached = false;
+    hideModal('lapModal');
+    renderHistory();
+    updateDisplay();
+    saveData();
+  }
+
+  /* ─────────────────────────────────────────
+     ラップ記録リセット
+  ───────────────────────────────────────── */
+  function showLapResetModal() { showModal('lapResetOverlay'); }
+  function confirmLapReset() {
+    laps = [];
+    renderHistory();
+    hideModal('lapResetOverlay');
+    saveData();
+  }
+
+  /* ─────────────────────────────────────────
+     履歴レンダリング
+  ───────────────────────────────────────── */
+  function renderHistory() {
+    if (laps.length === 0) {
+      historyCard.style.display = 'none';
+      return;
+    }
+    historyCard.style.display = 'block';
+    historyList.innerHTML = '';
+
+    laps.slice().reverse().forEach((lap, revIdx) => {
+      const origIdx = laps.length - 1 - revIdx;
+      const chip    = document.createElement('div');
+      chip.className = 'history-chip';
+
+      const info = document.createElement('span');
+      info.textContent = `${lap.count}${lap.unit} `;
+      const small = document.createElement('small');
+      small.textContent = lap.time;
+      info.appendChild(small);
+
+      const del = document.createElement('span');
+      del.className   = 'chip-del';
+      del.textContent = '✕';
+      del.onclick = (e) => {
+        e.stopPropagation();
+        deleteLap(origIdx);
+      };
+
+      chip.appendChild(info);
+      chip.appendChild(del);
+      historyList.appendChild(chip);
+    });
+  }
+
+  function deleteLap(idx) {
+    laps.splice(idx, 1);
+    renderHistory();
+    saveData();
+  }
+
+  /* ─────────────────────────────────────────
+     コンフェッティ・バナー
+  ───────────────────────────────────────── */
+  function showConfetti() {
+    const wrap   = document.getElementById('confettiWrap');
+    wrap.innerHTML = '';
+    const colors = ['#D8E2E2','#E8E0E4','#E2D8D8','#B8CCCC','#C8B0B8','#F2EAE8'];
+    for (let i = 0; i < 55; i++) {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      p.style.cssText = `
+        left:${Math.random()*100}%;top:-10px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        animation-delay:${Math.random()*0.8}s;
+        animation-duration:${0.8+Math.random()*0.8}s;
+        width:${5+Math.random()*6}px;height:${5+Math.random()*6}px;
+        border-radius:${Math.random()>0.5?'50%':'2px'};
+      `;
+      wrap.appendChild(p);
+    }
+    setTimeout(() => { wrap.innerHTML = ''; }, 2200);
+  }
+
+  function showDoneBanner() {
+    doneBanner.classList.add('show');
+    setTimeout(() => doneBanner.classList.remove('show'), 2800);
+  }
+
+  /* ─────────────────────────────────────────
+     キーボード操作
+  ───────────────────────────────────────── */
+  document.addEventListener('keydown', (e) => {
+    if (e.target === goalInput || e.target === unitSelect) return;
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      countUp();
+    } else if (e.key === 'Backspace' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      countDown();
+    } else if (e.key === 'r' || e.key === 'R') {
+      showResetModal();
+    }
+  });
+
+  /* ─────────────────────────────────────────
+     データ注意書きアコーディオン
+  ───────────────────────────────────────── */
+  function toggleDataNote() {
+    document.getElementById('dataNote').classList.toggle('open');
+  }
+
+  /* ─────────────────────────────────────────
+     起動
+  ───────────────────────────────────────── */
+  initApp();
+</script>
+</body>
+</html>
