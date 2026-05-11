@@ -699,7 +699,7 @@
   <div class="history-card" id="historyCard" style="display:none">
     <div class="history-title">ラップ記録</div>
     <div class="history-list" id="historyList"></div>
-    <button class="btn-lap-reset" onclick="showLapResetModal()">記録を消す</button>
+    <button class="btn-lap-reset" onclick="showLapResetModal()">記録をすべて消す</button>
   </div>
 
   <!-- データ注意書きアコーディオン -->
@@ -746,11 +746,24 @@
 <div class="modal-overlay" id="lapResetOverlay">
   <div class="modal">
     <div class="modal-icon">🗑</div>
-    <div class="modal-title">記録を消しますか？</div>
+    <div class="modal-title">記録をすべて消しますか？</div>
     <div class="modal-text">すべてのラップ記録が消えます。<br>カウントはそのまま残ります。</div>
     <div class="modal-btns">
       <button class="modal-btn-cancel" onclick="hideModal('lapResetOverlay')">キャンセル</button>
       <button class="modal-btn-ok"     onclick="confirmLapReset()">消す</button>
+    </div>
+  </div>
+</div>
+
+<!-- ラップ個別削除確認モーダル -->
+<div class="modal-overlay" id="lapDeleteOverlay">
+  <div class="modal">
+    <div class="modal-icon">✕</div>
+    <div class="modal-title">この記録を消しますか？</div>
+    <div class="modal-text" id="lapDeleteText"></div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="hideModal('lapDeleteOverlay')">キャンセル</button>
+      <button class="modal-btn-ok"     onclick="confirmDeleteLap()">消す</button>
     </div>
   </div>
 </div>
@@ -988,7 +1001,7 @@
       del.textContent = '✕';
       del.onclick = (e) => {
         e.stopPropagation();
-        deleteLap(origIdx);
+        showDeleteLapModal(origIdx, lap);
       };
 
       chip.appendChild(info);
@@ -1001,6 +1014,20 @@
     laps.splice(idx, 1);
     renderHistory();
     saveData();
+  }
+
+  let _pendingDeleteIdx = -1;
+  function showDeleteLapModal(idx, lap) {
+    _pendingDeleteIdx = idx;
+    document.getElementById('lapDeleteText').textContent =
+      `${lap.count}${lap.unit}（${lap.time}）の記録を消します。`;
+    showModal('lapDeleteOverlay');
+  }
+  function confirmDeleteLap() {
+    if (_pendingDeleteIdx < 0) return;
+    deleteLap(_pendingDeleteIdx);
+    _pendingDeleteIdx = -1;
+    hideModal('lapDeleteOverlay');
   }
 
   /* ─────────────────────────────────────────
