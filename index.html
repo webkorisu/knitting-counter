@@ -592,6 +592,7 @@
     overflow: hidden;
     border: 1.5px solid var(--border);
     background: var(--surface);
+    margin-bottom: 2px;
   }
   .data-note-btn {
     width: 100%;
@@ -702,15 +703,31 @@
     <button class="btn-lap-reset" onclick="showLapResetModal()">記録をすべて消す</button>
   </div>
 
-  <!-- データ注意書きアコーディオン -->
-  <div class="data-note" id="dataNote">
-    <button class="data-note-btn" onclick="toggleDataNote()">
-      <span>✿ データについて</span>
-      <span class="data-note-arrow">▼</span>
-    </button>
-    <div class="data-note-body">
-      <p>データはこの端末のブラウザに保存されます。<br>スマホとPCなど、端末が異なると記録は共有されません。</p>
-      <p>ブラウザの「履歴を消去」や「キャッシュ削除」を行うと、保存されたデータが消える場合があります。大切な記録はメモなどに控えておくと安心です。</p>
+  <!-- アコーディオン群 -->
+  <div style="display:flex; flex-direction:column; gap:4px;">
+    <!-- このアプリについて（免責） -->
+    <div class="data-note" id="aboutNote">
+      <button class="data-note-btn" onclick="toggleAboutNote()">
+        <span>✿ このアプリについて</span>
+        <span class="data-note-arrow">▼</span>
+      </button>
+      <div class="data-note-body">
+        <p>このアプリは、編み物や日々の暮らしをちょっと便利にするために作られた個人制作のツールです。</p>
+        <p>計算結果・提案内容はすべて参考情報としてお使いください。編み物の仕上がりや作業結果はゲージ・素材・個人差によって異なります。必ずご自身でご確認のうえお使いください。</p>
+        <p>作者（YUCCHI）は、アプリの内容・結果によって生じたいかなる損害についても責任を負いかねます。あらかじめご了承ください。</p>
+      </div>
+    </div>
+
+    <!-- データ注意書きアコーディオン -->
+    <div class="data-note" id="dataNote">
+      <button class="data-note-btn" onclick="toggleDataNote()">
+        <span>✿ データについて</span>
+        <span class="data-note-arrow">▼</span>
+      </button>
+      <div class="data-note-body">
+        <p>データはこの端末のブラウザに保存されます。<br>スマホとPCなど、端末が異なると記録は共有されません。</p>
+        <p>ブラウザの「履歴を消去」や「キャッシュ削除」を行うと、保存されたデータが消える場合があります。大切な記録はメモなどに控えておくと安心です。</p>
+      </div>
     </div>
   </div>
 
@@ -1075,8 +1092,11 @@
   });
 
   /* ─────────────────────────────────────────
-     データ注意書きアコーディオン
+     アコーディオン（免責・データ）
   ───────────────────────────────────────── */
+  function toggleAboutNote() {
+    document.getElementById('aboutNote').classList.toggle('open');
+  }
   function toggleDataNote() {
     document.getElementById('dataNote').classList.toggle('open');
   }
