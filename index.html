@@ -4,10 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="color-scheme" content="light only">
-<title>編み物カウンター | Knitting Counter - ✿ YUCCHI ✿</title>
-<meta name="description" content="棒針とかぎ針の目数・段数カウンター。目標設定・ラップ記録つき。Knitting row and stitch counter by YUCCHI.">
-<meta property="og:title" content="編み物カウンター | Knitting Counter - ✿ YUCCHI ✿">
-<meta property="og:description" content="目数・段数・周数・回数を記録できる編み物カウンター。目標設定・ラップ記録つき。">
+<title>編み物カウンターアプリ | 段数・目数を記録 - ✿ YUCCHI ✿</title>
+<meta name="description" content="棒針・かぎ針の編み物に使える無料カウンターアプリ。段数・目数・周数・回数を記録でき、目標設定やラップ記録にも対応。スマホのホーム画面に追加して、手元でかんたんに使えます。">
+<meta property="og:title" content="編み物カウンターアプリ | 段数・目数を記録 - ✿ YUCCHI ✿">
+<meta property="og:description" content="棒針・かぎ針の編み物に使える無料カウンターアプリ。段数・目数・周数・回数を記録でき、目標設定やラップ記録にも対応。">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="icon" href="favicon.ico">
+<link rel="shortcut icon" href="favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   /* ── Lady Gray 08 ──────────────────────────────
@@ -632,6 +637,41 @@
   .data-note-body p { margin-bottom: 6px; }
   .data-note-body p:last-child { margin-bottom: 0; }
 
+  /* ── Xフッター ───────────────────────────── */
+  .footer-wrap {
+    width: 100%;
+    margin: 8px 0 0;
+  }
+  .x-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    margin: 0;
+  }
+  .x-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    text-decoration: none;
+    transition: background .2s, border-color .2s;
+    margin-left: 1.5px;
+  }
+  .x-icon-btn svg { fill: var(--text-sub); }
+  .x-icon-btn:hover { background: var(--accent-bg); }
+  .x-icon-btn:hover svg { fill: var(--text-sub); }
+  .last-updated {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 10px;
+    color: var(--text-sub);
+    opacity: 0.75;
+    letter-spacing: .04em;
+  }
   /* ── ダークモード強制無効化 ── */
   @media (prefers-color-scheme: dark) {
     html { background: #EBE3E6 !important; }
@@ -703,31 +743,46 @@
     <button class="btn-lap-reset" onclick="showLapResetModal()">記録をすべて消す</button>
   </div>
 
-  <!-- アコーディオン群 -->
-  <div style="display:flex; flex-direction:column; gap:4px;">
-    <!-- このアプリについて（免責） -->
-    <div class="data-note" id="aboutNote">
-      <button class="data-note-btn" onclick="toggleAboutNote()">
-        <span>✿ このアプリについて</span>
-        <span class="data-note-arrow">▼</span>
-      </button>
-      <div class="data-note-body">
-        <p>このアプリは、編み物や日々の暮らしをちょっと便利にするために作られた個人制作のツールです。</p>
-        <p>計算結果・提案内容はすべて参考情報としてお使いください。編み物の仕上がりや作業結果はゲージ・素材・個人差によって異なります。必ずご自身でご確認のうえお使いください。</p>
-        <p>作者（YUCCHI）は、アプリの内容・結果によって生じたいかなる損害についても責任を負いかねます。あらかじめご了承ください。</p>
+  <!-- アコーディオン群 ＋ Xフッター -->
+  <div class="footer-wrap">
+    <div style="display:flex; flex-direction:column; gap:4px;">
+
+      <!-- このアプリについて（免責） -->
+      <div class="data-note" id="aboutNote">
+        <button class="data-note-btn" onclick="toggleAboutNote()">
+          <span>✿ このアプリについて</span>
+          <span class="data-note-arrow">▼</span>
+        </button>
+        <div class="data-note-body">
+          <p>このアプリは、編み物や日々の暮らしをちょっと便利にするために作られた個人制作のツールです。</p>
+          <p>計算結果・提案内容はすべて参考情報としてお使いください。編み物の仕上がりや作業結果はゲージ・素材・個人差によって異なります。必ずご自身でご確認のうえお使いください。</p>
+          <p>作者（YUCCHI）は、アプリの内容・結果によって生じたいかなる損害についても責任を負いかねます。あらかじめご了承ください。</p>
+        </div>
       </div>
+
+      <!-- データ注意書きアコーディオン -->
+      <div class="data-note" id="dataNote">
+        <button class="data-note-btn" onclick="toggleDataNote()">
+          <span>✿ データについて</span>
+          <span class="data-note-arrow">▼</span>
+        </button>
+        <div class="data-note-body">
+          <p>データはこの端末のブラウザに保存されます。<br>スマホとPCなど、端末が異なると記録は共有されません。</p>
+          <p>ブラウザの「履歴を消去」や「キャッシュ削除」を行うと、保存されたデータが消える場合があります。大切な記録はメモなどに控えておくと安心です。</p>
+        </div>
+      </div>
+
     </div>
 
-    <!-- データ注意書きアコーディオン -->
-    <div class="data-note" id="dataNote">
-      <button class="data-note-btn" onclick="toggleDataNote()">
-        <span>✿ データについて</span>
-        <span class="data-note-arrow">▼</span>
-      </button>
-      <div class="data-note-body">
-        <p>データはこの端末のブラウザに保存されます。<br>スマホとPCなど、端末が異なると記録は共有されません。</p>
-        <p>ブラウザの「履歴を消去」や「キャッシュ削除」を行うと、保存されたデータが消える場合があります。大切な記録はメモなどに控えておくと安心です。</p>
-      </div>
+    <!-- Xフッター -->
+    <div class="x-footer-row">
+      <a href="https://x.com/yuttyan4444" target="_blank" rel="noopener noreferrer"
+         aria-label="XでYUCCHIをフォロー" class="x-icon-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.254 5.622L18.244 2.25Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"/>
+        </svg>
+      </a>
+      <div class="last-updated">最終更新：2026.05.28</div>
     </div>
   </div>
 
