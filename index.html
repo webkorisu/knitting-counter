@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<!-- © 2026 YUCCHI. 無断複製・再配布禁止 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="color-scheme" content="light only">
@@ -119,9 +120,9 @@
     font-size: 14px;
     font-weight: 400;
     color: #A07080;
-    letter-spacing: .42em;
     padding-top: 10px;
   }
+  header .brand .deco { font-size: 11px; } /* ✿マーク：文字サイズ(14px) - 3px */
 
   /* ── メインコンテンツ ── */
   .app {
@@ -649,6 +650,11 @@
     padding: 8px 0;
     margin: 0;
   }
+  .x-footer-icons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
   .x-icon-btn {
     display: inline-flex;
     align-items: center;
@@ -661,10 +667,33 @@
     text-decoration: none;
     transition: background .2s, border-color .2s;
     margin-left: 1.5px;
+    position: relative;
   }
   .x-icon-btn svg { fill: var(--text-sub); }
   .x-icon-btn:hover { background: var(--accent-bg); }
   .x-icon-btn:hover svg { fill: var(--text-sub); }
+  @media (hover: hover) {
+    .x-icon-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 0;
+      transform: translateY(4px);
+      background: var(--text);
+      color: #fff;
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 10px;
+      letter-spacing: .04em;
+      padding: 4px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s, transform .15s;
+      z-index: 20;
+    }
+    .x-icon-btn:hover::after { opacity: .88; transform: translateY(0); }
+  }
   .last-updated {
     font-family: 'Zen Maru Gothic', sans-serif;
     font-size: 10px;
@@ -685,7 +714,7 @@
   <h1>編み物カウンター</h1>
   <h2>Knitting Counter</h2>
   <div class="title-ja-sub">棒針とかぎ針の目数・段数カウンター</div>
-  <div class="brand">✿ YUCCHI ✿</div>
+  <div class="brand"><span class="deco">✿</span>&nbsp;&nbsp;Y&nbsp;&nbsp;U&nbsp;&nbsp;C&nbsp;&nbsp;C&nbsp;&nbsp;H&nbsp;&nbsp;I&nbsp;&nbsp;<span class="deco">✿</span></div>
   <div class="data-hint">データはこの端末に保存されます<br>詳細は ✿ データについて をご確認ください</div>
 </header>
 
@@ -757,6 +786,7 @@
           <p>このアプリは、編み物や日々の暮らしをちょっと便利にするために作られた個人制作のツールです。</p>
           <p>計算結果・提案内容はすべて参考情報としてお使いください。編み物の仕上がりや作業結果はゲージ・素材・個人差によって異なります。必ずご自身でご確認のうえお使いください。</p>
           <p>作者（YUCCHI）は、アプリの内容・結果によって生じたいかなる損害についても責任を負いかねます。あらかじめご了承ください。</p>
+          <p>このアプリのコード・デザインは、作者（YUCCHI）が制作したものです。コードやデザインをそのまま複製・再配布・販売することはご遠慮ください。</p>
         </div>
       </div>
 
@@ -774,15 +804,23 @@
 
     </div>
 
-    <!-- Xフッター -->
+    <!-- Xフッター ＋ ポータルリンク -->
     <div class="x-footer-row">
-      <a href="https://x.com/yuttyan4444" target="_blank" rel="noopener noreferrer"
-         aria-label="XでYUCCHIをフォロー" class="x-icon-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.254 5.622L18.244 2.25Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"/>
-        </svg>
-      </a>
-      <div class="last-updated">最終更新：2026.05.28</div>
+      <div class="x-footer-icons">
+        <a href="https://webkorisu.github.io/yucchis-portal/" target="_blank" rel="noopener noreferrer"
+           aria-label="✿ YUCCHIのアプリ一覧を開く" data-tooltip="アプリ一覧へ" class="x-icon-btn">
+          <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12.74 1.67 L22 10 L22 20.5 Q22 22 20.5 22 L14.5 22 L14.5 15 L9.5 15 L9.5 22 L3.5 22 Q2 22 2 20.5 L2 10 L11.26 1.67 Q12 1 12.74 1.67 Z"/>
+          </svg>
+        </a>
+        <a href="https://x.com/yuttyan4444" target="_blank" rel="noopener noreferrer"
+           aria-label="XでYUCCHIをフォロー" data-tooltip="Xへ" class="x-icon-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.254 5.622L18.244 2.25Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"/>
+          </svg>
+        </a>
+      </div>
+      <div class="last-updated">最終更新：2026.09.23</div>
     </div>
   </div>
 
