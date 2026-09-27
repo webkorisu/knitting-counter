@@ -121,6 +121,12 @@
     font-weight: 400;
     color: #A07080;
     padding-top: 10px;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity .2s;
+  }
+  @media (hover: hover) {
+    header .brand:hover { opacity: .65; }
   }
   header .brand .deco { font-size: 11px; } /* ✿マーク：文字サイズ(14px) - 3px */
 
@@ -714,7 +720,7 @@
   <h1>編み物カウンター</h1>
   <h2>Knitting Counter</h2>
   <div class="title-ja-sub">棒針とかぎ針の目数・段数カウンター</div>
-  <div class="brand"><span class="deco">✿</span>&nbsp;&nbsp;Y&nbsp;&nbsp;U&nbsp;&nbsp;C&nbsp;&nbsp;C&nbsp;&nbsp;H&nbsp;&nbsp;I&nbsp;&nbsp;<span class="deco">✿</span></div>
+  <a class="brand" href="https://webkorisu.github.io/yucchis-portal/" target="_blank" rel="noopener noreferrer" aria-label="✿ YUCCHIのアプリ一覧を開く"><span class="deco">✿</span>&nbsp;&nbsp;Y&nbsp;&nbsp;U&nbsp;&nbsp;C&nbsp;&nbsp;C&nbsp;&nbsp;H&nbsp;&nbsp;I&nbsp;&nbsp;<span class="deco">✿</span></a>
   <div class="data-hint">データはこの端末に保存されます<br>詳細は ✿ データについて をご確認ください</div>
 </header>
 
@@ -820,7 +826,7 @@
           </svg>
         </a>
       </div>
-      <div class="last-updated">最終更新：2026.09.23</div>
+      <div class="last-updated">最終更新：2026.09.28</div>
     </div>
   </div>
 
