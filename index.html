@@ -28,6 +28,7 @@
     --text:       #5C5058;
     --text-sub:   #9A8E90;
     --border:     #E4DBDB;
+    --brand:      #A07080;
 
     --accent:     #8FA8A8;
     --accent-lt:  #D8E2E2;
@@ -70,7 +71,7 @@
     position: relative;
     z-index: 1;
     text-align: center;
-    padding: 18px 20px 18px;
+    padding: 18px 20px 12px;
     width: 100%;
   }
   header h1 {
@@ -119,16 +120,22 @@
     font-family: 'Cormorant Garamond', serif;
     font-size: 14px;
     font-weight: 400;
-    color: #A07080;
-    padding-top: 10px;
+    color: var(--brand, #A07080);
+    padding-top: 0;
+    display: inline-block;
+    line-height: 1.4;
     text-decoration: none;
+    transition: opacity .15s;
     -webkit-tap-highlight-color: transparent;
-    transition: opacity .2s;
+  }
+  header .brand .brand-deco {
+    font-size: .75em;
+    display: inline-block;
+    vertical-align: .05em;
   }
   @media (hover: hover) {
     header .brand:hover { opacity: .65; }
   }
-  header .brand .deco { font-size: 11px; } /* ✿マーク：文字サイズ(14px) - 3px */
 
   /* ── メインコンテンツ ── */
   .app {
@@ -581,7 +588,7 @@
 
   /* ── PC ── */
   @media (min-width: 680px) {
-    header { padding: 36px 20px 20px; }
+    header { padding: 36px 20px 12px; }
     .app { max-width: 460px; }
   }
 
@@ -720,8 +727,8 @@
   <h1>編み物カウンター</h1>
   <h2>Knitting Counter</h2>
   <div class="title-ja-sub">棒針とかぎ針の目数・段数カウンター</div>
-  <a class="brand" href="https://webkorisu.github.io/yucchis-portal/" target="_blank" rel="noopener noreferrer" aria-label="✿ YUCCHIのアプリ一覧を開く"><span class="deco">✿</span>&nbsp;&nbsp;Y&nbsp;&nbsp;U&nbsp;&nbsp;C&nbsp;&nbsp;C&nbsp;&nbsp;H&nbsp;&nbsp;I&nbsp;&nbsp;<span class="deco">✿</span></a>
-  <div class="data-hint">データはこの端末に保存されます<br>詳細は ✿ データについて をご確認ください</div>
+  <a class="brand" href="https://webkorisu.github.io/yucchis-portal/" target="_blank" rel="noopener noreferrer" aria-label="✿ YUCCHIのアプリ一覧を開く"><span class="brand-deco">✿</span>&nbsp;&nbsp;Y&nbsp;U&nbsp;C&nbsp;C&nbsp;H&nbsp;I&nbsp;&nbsp;<span class="brand-deco">✿</span></a>
+  <div class="data-hint">データはこの端末の中に保存されます</div>
 </header>
 
 <div class="app">
@@ -826,7 +833,7 @@
           </svg>
         </a>
       </div>
-      <div class="last-updated">最終更新：2026.09.28</div>
+      <div class="last-updated">最終更新：2026.10.15</div>
     </div>
   </div>
 
