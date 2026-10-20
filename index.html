@@ -9,6 +9,18 @@
 <meta name="description" content="棒針・かぎ針の編み物に使える無料カウンターアプリ。段数・目数・周数・回数を記録でき、目標設定やラップ記録にも対応。スマホのホーム画面に追加して、手元でかんたんに使えます。">
 <meta property="og:title" content="編み物カウンターアプリ | 段数・目数を記録 - ✿ YUCCHI ✿">
 <meta property="og:description" content="棒針・かぎ針の編み物に使える無料カウンターアプリ。段数・目数・周数・回数を記録でき、目標設定やラップ記録にも対応。">
+<link rel="canonical" href="https://webkorisu.github.io/knitting-counter/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://webkorisu.github.io/knitting-counter/">
+<meta property="og:site_name" content="✿ YUCCHI ✿">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:image" content="https://webkorisu.github.io/knitting-counter/counter-ogp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="編み物カウンターアプリ | 段数・目数を記録 - ✿ YUCCHI ✿">
+<meta name="twitter:description" content="棒針・かぎ針の編み物に使える無料カウンターアプリ。段数・目数・周数・回数を記録でき、目標設定やラップ記録にも対応。">
+<meta name="twitter:image" content="https://webkorisu.github.io/knitting-counter/counter-ogp.jpg">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -509,6 +521,7 @@
     color: var(--text-sub);
     text-align: center;
     line-height: 1.8;
+    text-wrap: balance;     /* 行の長さをそろえて、「ます。」だけ残るのを防ぐ */
   }
   .modal-btns {
     display: flex;
@@ -542,10 +555,149 @@
     color: #fff;
     cursor: pointer;
     transition: all .15s;
-    box-shadow: 0 3px 0 #988090;
   }
   .modal-btn-ok:hover { opacity: .9; }
-  .modal-btn-ok:active { transform: translateY(2px); box-shadow: 0 1px 0 #988090; }
+  .modal-btn-ok:active { transform: scale(.97); }
+
+  /* ===== シェア機能 ここから（CSS） ===== */
+  .share-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-sub);
+    letter-spacing: .06em;
+    cursor: pointer;
+    padding: 14px 24px;     /* 押せる範囲を広げる（高さ約45px） */
+    margin: -13px 0;        /* 押せる範囲の分を引いた、見た目の上下の余白 */
+    transition: opacity .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .share-link:not(.on) { display: none; }
+  .share-link svg { transform: translateY(1px); }   /* 文字の真ん中に合わせて、マークを少し下げる */
+  @media (hover: hover) {
+    .share-link.on:hover { opacity: .65; }
+  }
+  .share-modal {
+    max-width: 320px;
+    max-height: calc(100vh - 32px);    /* 小さい画面でも、はみ出さずにスクロールできる */
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+  }
+  .share-mode {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .share-mode.on { display: flex; }
+  .share-mode-btns {
+    display: flex;
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .share-mode-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 9px 4px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: var(--text-sub);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .15s, color .15s;
+  }
+  .share-mode-btn + .share-mode-btn { border-left: 1.5px solid var(--border); }
+  .share-mode-btn.on { background: var(--accent-bg); color: var(--num-even); }
+  .share-mode-btn:disabled { opacity: .4; cursor: default; }
+  .share-mode-note { font-size: 11px; color: var(--text-sub); }
+  .share-text {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text);
+    resize: none;
+  }
+  .share-text:focus { outline: none; border-color: var(--accent); }
+  .share-x-btn {
+    width: 100%;
+    border: 1.5px solid var(--accent-lt);
+    background: var(--accent-bg);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: .04em;
+    color: var(--num-even);
+    cursor: pointer;
+    transition: all .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .share-x-btn:hover { background: var(--accent-lt); }
+  .share-x-btn:active { transform: scale(.97); }
+  .share-copy {
+    background: none;
+    border: none;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--num-even);
+    letter-spacing: .04em;
+    cursor: pointer;
+    padding: 14px 24px;      /* 押せる範囲を広げる（高さ約45px） */
+    margin: -6px 0 -10px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .share-msg {
+    min-height: 1.2em;
+    font-size: 11px;
+    color: var(--text-sub);
+    text-align: center;
+  }
+  /* --- フッターの共有マーク（リンクだけをシェア） --- */
+  .x-icon-btn.share-icon-btn:not(.on) { display: none; }
+  .share-icon-btn { cursor: pointer; padding: 0; font: inherit; -webkit-tap-highlight-color: transparent; }
+  .x-icon-btn.share-icon-btn svg { fill: none; stroke: var(--text-sub); transform: translateX(-1px); } /* 右側に丸が2つあって右に寄って見えるので、少し左へ */
+  .share-toast {
+    position: fixed;
+    left: 0;
+    top: 0;                  /* 位置は、押したボタンのそばに、JSで決める */
+    width: max-content;
+    max-width: calc(100vw - 16px);
+    white-space: nowrap;     /* 1行で出す */
+    transform: translateY(6px);
+    background: var(--text);
+    color: #fff;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 12px;
+    letter-spacing: .04em;
+    padding: 8px 16px;
+    border-radius: 999px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s, transform .2s;
+    z-index: 300;
+  }
+  .share-toast.show { opacity: .9; transform: translateY(0); }
+  /* ===== シェア機能 ここまで（CSS） ===== */
 
   /* ── コンフェッティ ── */
   .confetti-wrap {
@@ -650,6 +802,25 @@
   .data-note.open .data-note-body { display: block; }
   .data-note-body p { margin-bottom: 6px; }
   .data-note-body p:last-child { margin-bottom: 0; }
+  .reload-latest-btn {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 9px 12px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-sub);
+    letter-spacing: .04em;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .reload-latest-btn:hover { background: var(--accent-bg); border-color: var(--accent); }
+  .reload-latest-btn:active { transform: scale(.97); }
 
   /* ── Xフッター ───────────────────────────── */
   .footer-wrap {
@@ -737,8 +908,8 @@
     <div class="counter-label">
       <span>カウント単位：</span>
       <select id="unitSelect">
-        <option value="目">目</option>
         <option value="段">段</option>
+        <option value="目">目</option>
         <option value="周">周</option>
         <option value="回">回</option>
       </select>
@@ -746,7 +917,7 @@
 
     <div class="count-display">
       <span class="count-number" id="countNum">0</span>
-      <span class="count-unit"   id="countUnit">目</span>
+      <span class="count-unit"   id="countUnit">段</span>
     </div>
 
     <div class="progress-wrap">
@@ -772,11 +943,19 @@
       <button class="btn-reset" onclick="showResetModal()">↺ リセット</button>
     </div>
 
+
     <div class="hint">
       <span class="key-badge">Space</span> または
       <span class="key-badge">Enter</span> で +1、
       <span class="key-badge">Backspace</span> で -1
     </div>
+
+    <!-- ===== シェア機能 ここから（ボタン） ===== -->
+    <button class="share-link" id="shareLink" onclick="showShareModal()" aria-label="編んだ記録をシェア">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>
+      編んだ記録をシェア
+    </button>
+    <!-- ===== シェア機能 ここまで（ボタン） ===== -->
   </div>
 
   <div class="history-card" id="historyCard" style="display:none">
@@ -812,6 +991,8 @@
         <div class="data-note-body">
           <p>データはこの端末のブラウザに保存されます。<br>スマホとPCなど、端末が異なると記録は共有されません。</p>
           <p>ブラウザの「履歴を消去」や「キャッシュ削除」を行うと、保存されたデータが消える場合があります。大切な記録はメモなどに控えておくと安心です。</p>
+          <p>📱 ホーム画面に追加してご利用の場合、アップデート後もすぐには最新版に切り替わらないことがあります。反映されない時は、アプリスイッチャーから一度完全に閉じて開き直すか、下のボタンで最新版を読み込み直せます（カウントやラップ記録などの保存データが消えることはありません）。</p>
+          <button type="button" class="reload-latest-btn" onclick="reloadLatestVersion()">🔄 最新版を読み込み直す</button>
         </div>
       </div>
 
@@ -832,8 +1013,14 @@
             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.254 5.622L18.244 2.25Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"/>
           </svg>
         </a>
+        <!-- ===== シェア機能 ここから（フッターの共有マーク） ===== -->
+        <button type="button" class="x-icon-btn share-icon-btn" id="shareIconBtn"
+                aria-label="リンクをシェア" data-tooltip="リンクをシェア" onclick="shareAppLink()">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3" fill="none"/><circle cx="6" cy="12" r="3" fill="none"/><circle cx="18" cy="19" r="3" fill="none"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>
+        </button>
+        <!-- ===== シェア機能 ここまで（フッターの共有マーク） ===== -->
       </div>
-      <div class="last-updated">最終更新：2026.10.15</div>
+      <div class="last-updated">最終更新：2026.10.20</div>
     </div>
   </div>
 
@@ -890,6 +1077,34 @@
     </div>
   </div>
 </div>
+
+<!-- ===== シェア機能 ここから（モーダル） ===== -->
+<div class="modal-overlay" id="shareModal" onclick="if(event.target===this)hideModal('shareModal')">
+  <div class="modal share-modal">
+    <div class="modal-icon">🧶</div>
+    <div class="modal-title">編んだ記録をシェア</div>
+    <div class="share-mode" id="shareMode">
+      <div class="share-mode-btns" role="group" aria-label="シェアする数">
+        <button type="button" class="share-mode-btn" id="shareModeNow" onclick="setShareMode('current')">今のカウント</button>
+        <button type="button" class="share-mode-btn on" id="shareModeTotal" onclick="setShareMode('total')">合計</button>
+      </div>
+      <div class="share-mode-note" id="shareModeNote"></div>
+    </div>
+    <textarea class="share-text" id="shareText" rows="5" maxlength="200" aria-label="シェアする文章"></textarea>
+    <div class="modal-text">文章は、自由に書き換えられます。<br>日付・時刻は入りません。<br>アプリのリンクが、最後に添えられます。<br>次の画面で投稿するまで、送られません。</div>
+    <div class="modal-text" id="shareHint"></div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="hideModal('shareModal')">閉じる</button>
+      <button class="modal-btn-ok" onclick="doShare()">シェア先を選ぶ</button>
+    </div>
+    <button class="share-x-btn" onclick="openX()">Xでシェア</button>
+    <button class="share-copy" onclick="copyShare()">文章とリンクをコピー</button>
+    <div class="share-msg" id="shareMsg" aria-live="polite"></div>
+  </div>
+</div>
+<!-- ===== シェア機能 ここまで（モーダル） ===== -->
+
+<div class="share-toast" id="shareToast" role="status" aria-live="polite"></div>
 
 <div class="confetti-wrap" id="confettiWrap"></div>
 <div class="done-banner"   id="doneBanner">✿ 目標達成！おめでとう！</div>
@@ -1061,13 +1276,13 @@
     if (count === 0) return;
     if (laps.length >= MAX_LAPS) {
       // 上限に達したら専用メッセージを出す
-      document.getElementById('lapModalText').textContent =
-        `ラップ記録は${MAX_LAPS}件までです。古い記録を削除してから追加してください。`;
+      document.getElementById('lapModalText').innerHTML =
+        `ラップ記録は${MAX_LAPS}件までです。<br>古い記録を削除してから<br>追加してください。`;
       document.getElementById('lapModalOk').style.display = 'none';
     } else {
       const u = getUnit();
-      document.getElementById('lapModalText').textContent =
-        `現在の ${count}${u} を記録して、カウントを０に戻します。`;
+      document.getElementById('lapModalText').innerHTML =
+        `現在の ${count}${u} を記録して<br>カウントを０に戻します。`;
       document.getElementById('lapModalOk').style.display = '';
     }
     showModal('lapModal');
@@ -1142,8 +1357,8 @@
   let _pendingDeleteIdx = -1;
   function showDeleteLapModal(idx, lap) {
     _pendingDeleteIdx = idx;
-    document.getElementById('lapDeleteText').textContent =
-      `${lap.count}${lap.unit}（${lap.time}）の記録を消します。`;
+    document.getElementById('lapDeleteText').innerHTML =
+      `${lap.count}${lap.unit}（${lap.time}）の<br>記録を消します。`;
     showModal('lapDeleteOverlay');
   }
   function confirmDeleteLap() {
@@ -1186,6 +1401,10 @@
   ───────────────────────────────────────── */
   document.addEventListener('keydown', (e) => {
     if (e.target === goalInput || e.target === unitSelect) return;
+    /* 【シェア機能】文章を書いている間は、カウントなどのキー操作をしない */
+    if (e.target.tagName === 'TEXTAREA') return;
+    const _shareModal = document.getElementById('shareModal');
+    if (_shareModal && _shareModal.classList.contains('show')) return;
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       countUp();
@@ -1206,6 +1425,190 @@
   function toggleDataNote() {
     document.getElementById('dataNote').classList.toggle('open');
   }
+
+  // 最新版を読み込み直す（保存データは消えません）
+  function reloadLatestVersion() {
+    location.href = location.pathname + '?v=' + Date.now();
+  }
+
+  /* ===== シェア機能 ここから（JS） ===== */
+  const SHARE_ENABLED    = true;  // false にすると、シェアボタンが消えます
+  const SHARE_APP_URL    = 'https://webkorisu.github.io/knitting-counter/'; // シェアに添えるリンク（このアプリの公開URL）
+  // シェアに入れる最小の数（単位ごと）。1 = ひとつでも数えたら入れる。
+  // ここにない単位はシェアに入れません。並べた順番が、文章に並ぶ順番です。
+  const SHARE_MIN = { '段': 1, '目': 1, '周': 1, '回': 1 };
+
+  const shareLink = document.getElementById('shareLink');
+  const shareText = document.getElementById('shareText');
+  const shareMsg  = document.getElementById('shareMsg');
+  const shareHint = document.getElementById('shareHint');
+
+  // どこで開いても、いつも同じ（このアプリの公開URL）
+  function getShareUrl() { return SHARE_APP_URL; }
+
+  // ラップ記録の合計 ＋ 今のカウント を、単位ごとに足す。
+  // 最小の数に届いた単位だけ返す（日付・時刻・名前は使わない）
+  // 'total'   = ラップ記録の合計 ＋ 今のカウント
+  // 'current' = 今のカウントだけ
+  let shareMode = 'total';
+
+  function getShareTotals(mode) {
+    mode = mode || shareMode;
+    const sum = {};
+    if (mode === 'total') {
+      laps.forEach(l => { sum[l.unit] = (sum[l.unit] || 0) + l.count; });
+    }
+    sum[getUnit()] = (sum[getUnit()] || 0) + count;
+    return Object.keys(SHARE_MIN)
+      .filter(u => (sum[u] || 0) >= SHARE_MIN[u])
+      .map(u => ({ unit: u, total: sum[u] }));
+  }
+
+  // 単位ごとに1行ずつ（どの単位を投稿するかは、本人が消して決める）
+  function makeSharePhrase() {
+    return '編んだ記録🧶\n' + getShareTotals().map(t => t.total + t.unit).join('\n');
+  }
+
+  // 文章と「回」のヒントを、いまの選択に合わせて作り直す
+  function refreshShareText() {
+    shareText.value = makeSharePhrase();
+    shareHint.textContent = getShareTotals().some(t => t.unit === '回')
+      ? '「回」は、何の回数か書き足すと伝わります。' : '';
+  }
+
+  function updateShareModeButtons() {
+    document.getElementById('shareModeTotal').classList.toggle('on', shareMode === 'total');
+    document.getElementById('shareModeNow').classList.toggle('on', shareMode === 'current');
+    document.getElementById('shareModeNote').textContent = (shareMode === 'total')
+      ? 'ラップ記録と、今のカウントの合計です。'
+      : '今のカウントだけです。';
+  }
+
+  function setShareMode(mode) {
+    shareMode = mode;
+    updateShareModeButtons();
+    refreshShareText();
+  }
+
+  function showShareModal() {
+    if (getShareTotals('total').length === 0) {
+      showShareToast('カウントするとシェアできます', shareLink);
+      return;
+    }
+    shareMode = 'total';
+    // ラップ記録があるときだけ、「合計」か「今のカウント」かを選べる
+    document.getElementById('shareMode').classList.toggle('on', laps.length > 0);
+    document.getElementById('shareModeNow').disabled = getShareTotals('current').length === 0;
+    updateShareModeButtons();
+    refreshShareText();
+    shareMsg.textContent = '';
+    showModal('shareModal');
+  }
+
+  async function doShare() {
+    const body = shareText.value.trim();
+    if (!body) return;
+    const url  = getShareUrl();
+    const full = body + '\n\n' + url;
+    if (navigator.share) {
+      try {
+        await navigator.share({ text: full });
+        hideModal('shareModal');
+      } catch (e) { /* 途中でやめた時は、何もしない */ }
+      return;
+    }
+    // シェア画面が使えない時は、Xの投稿画面を開く
+    openX();
+  }
+
+  // Xの投稿画面を新しいタブで開く（押した時だけ・APIは使わない。投稿は、X側で押すまで送られない）
+  function openX() {
+    const body = shareText.value.trim();
+    if (!body) return;
+    // リンクは、文章の最後に「改行して」入れる（urlの指定を使うと、文章の続きに空白でつながるため）
+    window.open('https://x.com/intent/post?text=' + encodeURIComponent(body + '\n\n' + getShareUrl()),
+                '_blank', 'noopener');
+    hideModal('shareModal');
+  }
+
+  async function copyShare() {
+    const full = shareText.value.trim() + '\n\n' + getShareUrl();
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(full);
+      ok = true;
+    } catch (e) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = full;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+      } catch (e2) { ok = false; }
+    }
+    shareMsg.textContent = ok ? '文章とリンクをコピーしました' : 'コピーできませんでした。文章を長押ししてコピーしてください';
+  }
+
+  // ---- フッターの共有マーク：リンクだけをシェア ----
+  const SHARE_ICON_ENABLED = true;  // false にすると、フッターの共有マークが消えます
+  const shareIconBtn = document.getElementById('shareIconBtn');
+  const shareToast   = document.getElementById('shareToast');
+  let _shareToastTimer;
+
+  function showShareToast(msg, anchor) {
+    shareToast.textContent = msg;
+    const w = shareToast.offsetWidth, h = shareToast.offsetHeight;
+    let left = (window.innerWidth - w) / 2;
+    let top  = window.innerHeight * 0.7;
+    if (anchor) {
+      const r = anchor.getBoundingClientRect();
+      left = r.left + r.width / 2 - w / 2;
+      top  = r.bottom + 8;                                   // ボタンの下
+      if (top + h > window.innerHeight - 8) top = r.top - h - 8;  // 入らなければ上
+    }
+    left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
+    shareToast.style.left = left + 'px';
+    shareToast.style.top  = top + 'px';
+    shareToast.classList.add('show');
+    clearTimeout(_shareToastTimer);
+    _shareToastTimer = setTimeout(() => shareToast.classList.remove('show'), 2200);
+  }
+
+  async function copyPlain(text) {
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch (e) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      } catch (e2) { return false; }
+    }
+  }
+
+  // スマホ：シェア画面を開く／パソコン：リンクをコピー（Macのシェア画面にはXが出ないため）
+  async function shareAppLink() {
+    const url = getShareUrl();
+    if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
+      try { await navigator.share({ text: '編み物カウンター ✿ YUCCHI ✿\n\n' + url }); }
+      catch (e) { /* 途中でやめた時は、何もしない */ }
+      return;
+    }
+    const ok = await copyPlain(url);
+    showShareToast(ok ? 'リンクをコピーしました' : 'コピーできませんでした', shareIconBtn);
+  }
+
+  if (SHARE_ICON_ENABLED) shareIconBtn.classList.add('on');
+
+  if (SHARE_ENABLED) {
+    shareLink.classList.add('on');
+  }
+  /* ===== シェア機能 ここまで（JS） ===== */
 
   /* ─────────────────────────────────────────
      起動
