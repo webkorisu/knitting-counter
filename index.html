@@ -431,23 +431,38 @@
     gap: 6px;
     justify-content: center;       /* 見た目は、段ごとに中央揃え（並ぶ順番は、右から左・下から上のまま） */
   }
+  .history-list.grid-mode {
+    justify-content: flex-start;   /* 枠をそろえた時は、列がずれないよう、右はしから詰める */
+    margin: 0 auto;                /* かたまり全体を、真ん中に置く（幅はJSで決める） */
+    max-width: 100%;
+  }
+  .history-list.grid-mode .history-chip { justify-content: center; max-width: 100%; }
   .history-chip {
     background: var(--accent-bg);
     border: 1.5px solid var(--accent-lt);
     border-radius: var(--radius-pill);
-    padding: 4px 12px;
-    font-size: 12px;
+    padding: 4px 14px;
+    font-size: 13px;
     color: var(--text);
     font-weight: 700;
     cursor: pointer;
     transition: all .15s;
     display: flex;
     align-items: center;
-    gap: 6px;
-    letter-spacing: .03em;
+    justify-content: center;
+    position: relative;      /* ✕を、右はしに重ねるため */
+  }
+  /* いつも2行：上に数字と単位、下に日付と時刻（桁数が増えても、枠の高さが変わらない） */
+  .history-chip > span:first-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    line-height: 1.3;
+    text-align: center;
   }
   .history-chip:hover { background: var(--accent-lt); }
-  .history-chip small { color: var(--text-sub); font-weight: 500; font-size: 10px; }
+  .history-chip small { color: var(--text-sub); font-weight: 500; font-size: 10px; display: block; white-space: nowrap; }
 
   /* 🟡修正：✕ボタンのタップ領域を拡大 */
   .chip-del {
@@ -456,9 +471,16 @@
     font-weight: 700;
     line-height: 1;
     transition: color .15s;
-    padding: 4px 6px;   /* タップ領域を広げる */
-    margin: -4px -6px;  /* 外見を変えずに領域だけ拡大 */
-    border-radius: 4px;
+    /* 右はしに重ねて置く。押せる範囲は、枠の高さいっぱい・幅20px */
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
   }
   .history-chip:hover .chip-del { color: #C8A0A0; }
 
@@ -642,6 +664,28 @@
     line-height: 1.6;
     color: var(--text);
     resize: none;
+  }
+  .share-tpl-row {
+    display: none;
+    flex-direction: column;   /* 説明と、戻すボタンを、2行に分ける */
+    align-items: center;
+    gap: 0;
+    margin-top: -4px;
+    font-size: 11px;
+    color: var(--text-sub);
+  }
+  .share-tpl-row.on { display: flex; }
+  .share-tpl-row button {
+    background: none;
+    border: none;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--num-even);
+    padding: 10px 16px;      /* 押せる範囲（高さ約37px） */
+    margin: -2px 0 -6px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
   .share-text:focus { outline: none; border-color: var(--accent); }
   .share-x-btn {
@@ -1029,7 +1073,7 @@
         </button>
         <!-- ===== シェア機能 ここまで（フッターの共有マーク） ===== -->
       </div>
-      <div class="last-updated">最終更新：2026.10.20</div>
+      <div class="last-updated">最終更新：2026.10.21</div>
     </div>
   </div>
 
@@ -1100,6 +1144,10 @@
       <div class="share-mode-note" id="shareModeNote"></div>
     </div>
     <textarea class="share-text" id="shareText" rows="5" maxlength="200" aria-label="シェアする文章"></textarea>
+    <div class="share-tpl-row" id="shareTplRow">
+      <span>書き換えた文章を、次も使います</span>
+      <button type="button" onclick="resetShareText()">定型文に戻す</button>
+    </div>
     <div class="modal-text">文章は、自由に書き換えられます。<br>日付・時刻は入りません。<br>アプリのリンクが、最後に添えられます。<br>次の画面で投稿するまで、送られません。</div>
     <div class="modal-text" id="shareHint"></div>
     <div class="modal-btns">
@@ -1123,7 +1171,7 @@
      状態変数
   ───────────────────────────────────────── */
   const MAX_COUNT = 999;
-  const MAX_LAPS  = 100; // ラップ記録の上限
+  const MAX_LAPS  = 99;  // ラップ記録の上限（3列で並べた時に、きれいに33段になる数）
 
   let count       = 0;
   let laps        = [];
@@ -1370,7 +1418,33 @@
       chip.appendChild(del);
       historyList.appendChild(chip);
     });
+    layoutHistory();
   }
+
+  // 【記録の枠をそろえる ここから】
+  // true：すべての記録の枠を同じ幅にして、3列に並べる（画面が狭い時だけ2列）。縦の列がそろう
+  //       列の数は、画面の幅だけで決まる。記録の桁数が増えても、列の数は変わらない
+  //       （枠に入りきらない時だけ、日時が次の行に回る）
+  // false：枠は、中身の幅のまま。段ごとに中央揃え
+  const LAP_GRID = true;
+  function layoutHistory() {
+    const chips = [...historyList.children];
+    historyList.classList.toggle('grid-mode', LAP_GRID);
+    historyList.style.width = '';
+    chips.forEach(c => { c.style.width = ''; });
+    if (!LAP_GRID || !chips.length || historyCard.style.display === 'none') return;
+
+    const gap   = 6;                                                  // CSSの gap と同じ数字
+    const cs    = getComputedStyle(historyCard);
+    const avail = historyCard.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const cols  = avail >= 270 ? 3 : 2;
+    const w     = Math.floor((avail - gap * (cols - 1)) / cols);
+    const used  = Math.min(cols, chips.length);                       // 記録が少ない時は、その数だけの幅
+    chips.forEach(c => { c.style.width = w + 'px'; });
+    historyList.style.width = (used * w + (used - 1) * gap) + 'px';
+  }
+  window.addEventListener('resize', layoutHistory);
+  // 【記録の枠をそろえる ここまで】
 
   function deleteLap(idx) {
     laps.splice(idx, 1);
@@ -1488,9 +1562,84 @@
       .map(u => ({ unit: u, total: sum[u] }));
   }
 
-  // 単位ごとに1行ずつ（どの単位を投稿するかは、本人が消して決める）
+  // ── 文章の「型」を覚える ──
+  // ユーザーが書き換えた文章は、数字の部分を {段} {目} {周} {回} に置きかえて保存する（kc_share_tpl）。
+  // 次に開いた時は、その型に、最新の数字を入れて出す。更新されるのは、数字だけ。
+  const SHARE_TPL_KEY = 'kc_share_tpl';
+  const SHARE_UNITS   = Object.keys(SHARE_MIN);
+
+  function loadShareTpl() {
+    try {
+      const o = JSON.parse(localStorage.getItem(SHARE_TPL_KEY));
+      if (o && typeof o.t === 'string' && Array.isArray(o.seen)) return o;
+    } catch (e) { /* 読めない時は、使わない */ }
+    return null;
+  }
+  function saveShareTpl(o) {
+    try {
+      if (o) localStorage.setItem(SHARE_TPL_KEY, JSON.stringify(o));
+      else   localStorage.removeItem(SHARE_TPL_KEY);
+    } catch (e) { /* 保存できない時は、覚えないだけ */ }
+  }
+
+  // 初めて（または初期に戻した時）の文章：単位ごとに1行ずつ
+  function makeDefaultPhrase(totals) {
+    return '編んだ記録🧶\n' + totals.map(t => t.total + t.unit).join('\n');
+  }
+
+  // 覚えている型に、最新の数字を入れる
+  function buildFromTpl(tpl, totals) {
+    const map = {};
+    totals.forEach(t => { map[t.unit] = t.total; });
+    const tokenRe = /\{(段|目|周|回)\}/g;
+    const out = [];
+    let lastTokenLine = -1;
+    tpl.t.split('\n').forEach(line => {
+      const units = [...line.matchAll(tokenRe)].map(m => m[1]);
+      if (units.some(u => !(u in map))) return;               // 数がない単位の行は、出さない
+      if (units.length) lastTokenLine = out.length;
+      out.push(line.replace(tokenRe, (m, u) => map[u] + u));
+    });
+    // 型を作った時に、まだ一度も出ていなかった単位は、数字の行のあとに足す（消した行は、戻さない）
+    const inTpl = SHARE_UNITS.filter(u => tpl.t.indexOf('{' + u + '}') !== -1);
+    const added = totals.filter(t => !tpl.seen.includes(t.unit) && !inTpl.includes(t.unit))
+                        .map(t => t.total + t.unit);
+    if (added.length) out.splice(lastTokenLine + 1 || out.length, 0, ...added);
+    return out.join('\n');
+  }
+
   function makeSharePhrase() {
-    return '編んだ記録🧶\n' + getShareTotals().map(t => t.total + t.unit).join('\n');
+    const totals = getShareTotals();
+    const tpl = loadShareTpl();
+    return (tpl && buildFromTpl(tpl, totals)) || makeDefaultPhrase(totals);
+  }
+
+  // 文章を書き換えたら、型を覚える（初期の文章と同じなら、覚えているものを消す）
+  function onShareTextInput() {
+    const totals = getShareTotals();
+    const text = shareText.value;
+    if (text === makeDefaultPhrase(totals)) {
+      saveShareTpl(null);
+    } else {
+      let t = text;
+      totals.forEach(({ unit, total }) => {
+        t = t.replace(new RegExp('(^|[^0-9])' + total + unit, 'g'), (m, pre) => pre + '{' + unit + '}');
+      });
+      const old = loadShareTpl();
+      const seen = [...new Set([...(old ? old.seen : []), ...totals.map(x => x.unit)])];
+      saveShareTpl({ t: t, seen: seen });
+    }
+    updateShareTplRow();
+  }
+
+  function resetShareText() {
+    saveShareTpl(null);
+    refreshShareText();
+    updateShareTplRow();
+  }
+
+  function updateShareTplRow() {
+    document.getElementById('shareTplRow').classList.toggle('on', !!loadShareTpl());
   }
 
   // 文章と「回」のヒントを、いまの選択に合わせて作り直す
@@ -1525,6 +1674,7 @@
     document.getElementById('shareModeNow').disabled = getShareTotals('current').length === 0;
     updateShareModeButtons();
     refreshShareText();
+    updateShareTplRow();
     shareMsg.textContent = '';
     showModal('shareModal');
   }
@@ -1575,6 +1725,8 @@
     }
     shareMsg.textContent = ok ? '文章とリンクをコピーしました' : 'コピーできませんでした。文章を長押ししてコピーしてください';
   }
+
+  shareText.addEventListener('input', onShareTextInput);
 
   // ---- フッターの共有マーク：リンクだけをシェア ----
   const SHARE_ICON_ENABLED = true;  // false にすると、フッターの共有マークが消えます
