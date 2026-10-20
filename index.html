@@ -411,7 +411,7 @@
     color: var(--text-sub);
     letter-spacing: .14em;
     text-transform: uppercase;
-    margin-bottom: 12px;
+    margin-bottom: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -426,9 +426,10 @@
   }
   .history-list {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: row-reverse;   /* 右から左へ並べる */
+    flex-wrap: wrap-reverse;       /* 1段がいっぱいになったら、その上の段へ積み上がる */
     gap: 6px;
-    justify-content: center;
+    justify-content: center;       /* 見た目は、段ごとに中央揃え（並ぶ順番は、右から左・下から上のまま） */
   }
   .history-chip {
     background: var(--accent-bg);
@@ -471,7 +472,7 @@
     transition: color .15s;
     font-weight: 700;
     padding: 4px 8px;
-    margin-top: 10px;
+    margin-top: 16px;
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -583,6 +584,13 @@
   @media (hover: hover) {
     .share-link.on:hover { opacity: .65; }
   }
+  /* ===== ラップ記録の目印 ここから ===== */
+  .history-chip.chip-new { animation: lapChipIn .7s ease; }
+  @keyframes lapChipIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  /* ===== ラップ記録の目印 ここまで ===== */
   .share-modal {
     max-width: 320px;
     max-height: calc(100vh - 32px);    /* 小さい画面でも、はみ出さずにスクロールできる */
@@ -989,7 +997,8 @@
           <span class="data-note-arrow">▼</span>
         </button>
         <div class="data-note-body">
-          <p>データはこの端末のブラウザに保存されます。<br>スマホとPCなど、端末が異なると記録は共有されません。</p>
+          <p>データはこの端末のブラウザに保存されます。<br>スマホとPCなど、<br>端末が異なると記録は共有されません。</p>
+          <p>ホーム画面から開く場合と、<br>ブラウザやリンクから開く場合でも、<br>記録は別々に保存されます。</p>
           <p>ブラウザの「履歴を消去」や「キャッシュ削除」を行うと、保存されたデータが消える場合があります。大切な記録はメモなどに控えておくと安心です。</p>
           <p>📱 ホーム画面に追加してご利用の場合、アップデート後もすぐには最新版に切り替わらないことがあります。反映されない時は、アプリスイッチャーから一度完全に閉じて開き直すか、下のボタンで最新版を読み込み直せます（カウントやラップ記録などの保存データが消えることはありません）。</p>
           <button type="button" class="reload-latest-btn" onclick="reloadLatestVersion()">🔄 最新版を読み込み直す</button>
@@ -1299,7 +1308,22 @@
     renderHistory();
     updateDisplay();
     saveData();
+    showNewLapChip();   // 【ラップ記録の目印】追加した記録を、ふわっと見せる
   }
+
+  // 【ラップ記録の目印 ここから】
+  // 記録を追加したら、新しい記録を「ふわっと表示」して、見えない位置なら、そこまでスクロールする
+  const LAP_SCROLL = true;   // false にすると、スクロールしません（ふわっと表示だけ）
+  function showNewLapChip() {
+    const newest = historyList.lastElementChild;     // いちばん新しい記録
+    if (newest) newest.classList.add('chip-new');
+    if (!LAP_SCROLL) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(() => {
+      historyCard.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' });
+    }, 150);
+  }
+  // 【ラップ記録の目印 ここまで】
 
   /* ─────────────────────────────────────────
      ラップ記録リセット
@@ -1323,8 +1347,8 @@
     historyCard.style.display = 'block';
     historyList.innerHTML = '';
 
-    laps.slice().reverse().forEach((lap, revIdx) => {
-      const origIdx = laps.length - 1 - revIdx;
+    // 古い記録から順に並べる（古い順に、右から左へ・下から上へ積み上がる）
+    laps.forEach((lap, origIdx) => {
       const chip    = document.createElement('div');
       chip.className = 'history-chip';
 
@@ -1595,7 +1619,8 @@
   async function shareAppLink() {
     const url = getShareUrl();
     if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
-      try { await navigator.share({ text: '編み物カウンター ✿ YUCCHI ✿\n\n' + url }); }
+      // アプリ名とブランド名は、別の行に（LINEなどで、花マークだけ折り返さないように）
+      try { await navigator.share({ text: '編み物カウンター\n✿ YUCCHI ✿\n\n' + url }); }
       catch (e) { /* 途中でやめた時は、何もしない */ }
       return;
     }
